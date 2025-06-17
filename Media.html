@@ -86,21 +86,7 @@
                 <div class="container">
                     <h1 class="Anton text-center mb-5">MEDIA</h1>
                     <div class="row justify-content-center">
-                        <div class="col-lg-8">
-                            <div class="card post-card">
-                                <img src="img/projects/Mall/1.jpg" class="img-fluid" alt="Eco City update">
-                                <div class="card-body">
-                                    <h5 class="card-title">Weekly Update</h5>
-                                    <p class="card-text">Latest progress on Eco City development.</p>
-                                </div>
-                            </div>
-                            <div class="card post-card">
-                                <img src="img/projects/Mall/2.jpg" class="img-fluid" alt="Eco City event">
-                                <div class="card-body">
-                                    <h5 class="card-title">Community Event</h5>
-                                    <p class="card-text">Highlights from our weekend gathering.</p>
-                                </div>
-                            </div>
+                        <div class="col-lg-8" id="posts-container">
                         </div>
                     </div>
                 </div>
@@ -140,6 +126,23 @@
 
     <!-- Theme Initialization Files -->
     <script src="js/theme.init.js"></script>
+    <script>
+        $(function() {
+            $.getJSON('posts.json', function(data) {
+                var container = $('#posts-container');
+                container.empty();
+                data.forEach(function(post) {
+                    var card = $('<div class="card post-card mb-3"></div>');
+                    card.append('<img src="' + post.image + '" class="img-fluid" alt="' + post.title + '">');
+                    var body = $('<div class="card-body"></div>');
+                    body.append('<h5 class="card-title">' + post.title + '</h5>');
+                    body.append('<p class="card-text">' + post.text + '</p>');
+                    card.append(body);
+                    container.append(card);
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
