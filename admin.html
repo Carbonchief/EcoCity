@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+    <script src="vendor/jquery/jquery.min.js"></script>
+</head>
+<body class="p-4">
+<div class="container">
+    <h1>Admin Panel</h1>
+    <div id="login-section">
+        <form id="login-form" class="mb-3" style="max-width:300px;">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control">
+            </div>
+            <button class="btn btn-primary" type="submit">Login</button>
+        </form>
+    </div>
+    <div id="admin-section" style="display:none;">
+        <div id="message" class="alert alert-info" style="display:none;"></div>
+        <h2>Upload Downloadable File</h2>
+        <form id="upload-form" enctype="multipart/form-data" class="mb-5">
+            <div class="mb-3"><input type="file" name="file" class="form-control"></div>
+            <button class="btn btn-primary" type="submit">Upload</button>
+        </form>
+        <h2>Add Media Post</h2>
+        <form id="post-form" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label">Title</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Text</label>
+                <textarea name="text" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Image</label>
+                <input type="file" name="post_image" class="form-control">
+            </div>
+            <button class="btn btn-success" type="submit">Add Post</button>
+        </form>
+    </div>
+</div>
+<script>
+function showMessage(msg){
+    $('#message').text(msg).show();
+}
+function checkStatus(){
+    $.post('admin_api.php', {action:'status'}, function(data){
+        if(data.success){
+            $('#login-section').hide();
+            $('#admin-section').show();
+        }
+    }, 'json');
+}
+$('#login-form').on('submit', function(e){
+    e.preventDefault();
+    var formData = $(this).serializeArray();
+    formData.push({name:'action', value:'login'});
+    $.post('admin_api.php', formData, function(data){
+        if(data.success){
+            $('#login-section').hide();
+            $('#admin-section').show();
+            showMessage(data.message);
+        } else {
+            showMessage(data.message);
+        }
+    }, 'json');
+});
+$('#upload-form').on('submit', function(e){
+    e.preventDefault();
+    var formData = new FormData(this);
+    formData.append('action','upload_file');
+    $.ajax({
+        url:'admin_api.php',
+        type:'POST',
+        data:formData,
+        processData:false,
+        contentType:false,
+        dataType:'json',
+        success:function(data){
+            showMessage(data.message);
+        }
+    });
+});
+$('#post-form').on('submit', function(e){
+    e.preventDefault();
+    var formData = new FormData(this);
+    formData.append('action','add_post');
+    $.ajax({
+        url:'admin_api.php',
+        type:'POST',
+        data:formData,
+        processData:false,
+        contentType:false,
+        dataType:'json',
+        success:function(data){
+            showMessage(data.message);
+        }
+    });
+});
+$(checkStatus);
+</script>
+</body>
+</html>
